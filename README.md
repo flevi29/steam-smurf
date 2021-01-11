@@ -40,4 +40,4 @@ When you launch this script, it will ask you for some information it requires :
 After it has been fed with some appropriate information, it won't bother you anymore with questions, and 
 will just fulfill it's purpose as quickly as possible.
 
-![demo](https://raw.githubusercontent.com/FLevent29/steam-smurf/master/demo1.png)
+![demo1](https://raw.githubusercontent.com/FLevent29/steam-smurf/master/demo1.png?raw=true)
