@@ -16,7 +16,8 @@ for you.
 
 ## How it works
 
-Here are the steps it takes :
+Here's what the script does :
+- Validates variables, and if something is wrong/missing it asks for user input
 - Shuts down currently running Steam process 
 - Logs in with provided smurf account info
 - Launches provided title 
@@ -26,18 +27,19 @@ Here are the steps it takes :
 
 ## Setup
 
-When you launch this script, it will ask you for some information it requires :
-- Username
-- Password
-- Steam folder location (if you did not choose default when installing Steam)
-- Game's executable location
-- Game's Steam ID (it's right next to 'store.steampowered.com/app/' on the [game's store page](https://store.steampowered.com/))
+_Information_ the script might/will ask you for :
+- **Username**
+- **Password**
+- **Steam folder location** (if you did not choose default when installing Steam)
+- **Game's executable location**
+- **Game's Steam ID** (it's right next to ```store.steampowered.com/app/``` on the [game's store page](https://store.steampowered.com/))
 
 > **NOTE** All of these can be entered manually, by **editing the script with a preferred text editor** like notepad,
 > furthermore it is _**advised**_ to do so, because some wrong 
 > information can only be corrected that way, and it's easier in my opinion
  
-After it has been fed with some appropriate information, it won't bother you anymore with questions, and 
-will just fulfill it's purpose as quickly as possible.
+What I like to do on Windows 10 is to set up a _shortcut_ in ```%appdata%\Microsoft\Windows\Start Menu\Programs``` of the script<br/>
+This way I can just quickly press ```the Windows/Command-key``` and type in the shortcuts' name
+> Below you can see an example of how the script should look like for Dota 2 . .
 
 ![demo1](https://raw.githubusercontent.com/FLevent29/steam-smurf/master/demo1.png?raw=true)
