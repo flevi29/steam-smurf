@@ -26,13 +26,16 @@ Here are the steps it takes :
 
 ## Setup
 
-When you launch this script, it will ask you for some information :
+When you launch this script, it will ask you for some information it requires :
 - Username
 - Password
 - Steam folder location (if you did not choose default when installing Steam)
-- Game executable location
-- Game's Steam ID (right next to 'store.steampowered.com/app/' on the [game's store page](https://store.steampowered.com/))
+- Game's executable location
+- Game's Steam ID (it's right next to 'store.steampowered.com/app/' on the [game's store page](https://store.steampowered.com/))
 
 > **NOTE** All of these can be entered manually, by **editing the script with a preferred text editor** like notepad,
 > furthermore it is _**advised**_ to do so, because some wrong 
 > information can only be corrected that way, and it's easier in my opinion
+ 
+After it has been fed with some appropriate information, it won't bother you anymore with questions, and 
+will just fulfill it's purpose as quickly as possible.
