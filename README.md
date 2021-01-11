@@ -42,4 +42,4 @@ What I like to do on Windows 10 is to set up a _shortcut_ in ```%appdata%\Micros
 This way I can just quickly press ```the Windows/Command-key``` and type in the shortcuts' name, also I can set a custom icon
 > Below you can see an example of how the script should look like for Dota 2 . .
 
-![demo1](https://raw.githubusercontent.com/FLevent29/steam-smurf/master/demo1.png)
+![example](https://raw.githubusercontent.com/FLevent29/steam-smurf/master/example.png)
