@@ -38,8 +38,8 @@ _Information_ the script might/will ask you for :
 > furthermore it is _**advised**_ to do so, because some wrong 
 > information can only be corrected that way, and it's easier in my opinion
  
-What I like to do on Windows 10 is to set up a _shortcut_ in ```%appdata%\Microsoft\Windows\Start Menu\Programs``` of the script . .<br/>
-This way I can just quickly press ```the Windows/Command-key``` and type in the shortcuts' name, also I can set a custom icon . .
+What I like to do on Windows 10 is to set up a _shortcut_ of the script in ```%appdata%\Microsoft\Windows\Start Menu\Programs``` . .  
+This way I can quickly launch it just by pressing ```the Windows/Command-key``` and typing in the shortcuts' name, also I can set a custom icon . .
 
 > Below you can see an example of how the script should look like for Dota 2 . .
 > 
