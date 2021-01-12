@@ -25,7 +25,9 @@ Here's what the script does :
 6. Shuts down Steam 
 7. Launches Steam again so you can log back into your official/whichever account
 
-## Setup
+## Download & Setup
+
+- [Download smurf.bat](https://github.com/FLevent29/steam-smurf/releases/download/1.0/smurf.bat)
 
 _Information_ the script needs :
 - **Username**
