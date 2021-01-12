@@ -27,7 +27,7 @@ Here's what the script does :
 
 ## Setup
 
-_Information_ the script might/will ask you for :
+_Information_ the script needs :
 - **Username**
 - **Password**
 - **Steam folder location** (if you did not choose default when installing Steam)
