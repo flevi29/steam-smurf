@@ -17,7 +17,7 @@ for you.
 ## How it works
 
 Here's what the script does :
-1. Validates provided info
+1. Validates information
 2. Shuts down currently running Steam process 
 3. Logs in with provided account info
 4. Launches provided title 
@@ -25,9 +25,14 @@ Here's what the script does :
 6. Shuts down Steam 
 7. Launches Steam again so you can log back into your official/whichever account
 
+> **NOTE** on step 4. at rare occasions Steam might warn you about some
+> **_bad game configuration_**, and the game fails to start  
+> The script will simply try to restart it, and 
+> eventually should succeed if everything else is fine
+
 ## Download & Setup
 
-- [Download smurf.bat](https://github.com/FLevent29/steam-smurf/releases/download/1.0/smurf.bat)
+- [Download smurf.bat](https://github.com/FLevent29/steam-smurf/releases/download/1.1/smurf.bat)
 
 _Information_ the script needs :
 - **Username**

@@ -25,7 +25,8 @@ set "btchtitle=-==%~n0==-"
 title %btchtitle%
 
 set "steam=%steamfolder%\steam.exe"
-set "logs=%steamfolder%\logs\connection_log.txt"
+set "connectionLogs=%steamfolder%\logs\connection_log.txt"
+set "contentLogs=%steamfolder%\logs\content_log.txt"
 
 :: Function or rather string for changing the content
 :: of the script via $content ps variable
@@ -46,11 +47,18 @@ set "exitSteam=$stmid = (Get-Process | ?{$_.path -eq \"%steam%\"} | Select -Expa
 powershell -WindowStyle Normal -Command "%exitSteam%; Start-Process -FilePath \"%steam%\" -ArgumentList \"-login %username% %password%\"; exit 0; "
 
 :: Check if login attempt is successful
-powershell -WindowStyle Normal -Command "$now = Get-Date -Format 'yyyy-MM-dd HH:mm'; $retries = 0; while ($retries -ge 0) { if ($retries -ge 1) { Start-Sleep -s 1; } if ($retries -ge 10) { Write-Host \"Something went wrong, maybe Steam doesn't print to logs\"; exit 1; } $content = Get-Content \"%logs%\" | select -Last 50; foreach ($line in $content) { $match = [regex]::Match($line, \"[\d]{4}-[\d]{2}-[\d]{2} ([\d]{2}:){2}[\d]{2}\"); if ($match.Success -and $match.Value -ge $now) { $match = [regex]::Match($line, \"RecvMsgClientLogOnResponse(?=\(\).+'OK')^|Connection Failed^|Invalid Password\"); if ($match.Success) { $retries = -2; break; } } } $retries++; } switch ($match.Value) { \"Invalid Password\" { Write-Host \"Invalid username and password combination\"; Write-Host; $content = Get-Content \"%0\"; $done = 0; for ($i=0; $i -lt $content.Length; $i++) { if ($content[$i] -match 'set \"username=.*\"') { $content[$i] = \"set `\"username=`\"\"; $done++; } elseif ($content[$i] -match 'set \"password=.*\"') { $content[$i] = \"set `\"password=`\"\"; $done++; } if ($done -eq 2) { break; } }; Write-Host \"Press any key to exit . .\"; cmd /c pause | Out-Null; %editandkillscript%; } \"Connection Failed\" { Write-Host \"Something went wrong. Maybe there's no internet\"; Write-Host; exit 1; } \"RecvMsgClientLogOnResponse\" { exit 0; } } exit 1; "
+powershell -WindowStyle Normal -Command "$now = Get-Date -Format 'yyyy-MM-dd HH:mm'; $retries = 0; while ($retries -ge 0) { if ($retries -ge 1) { Start-Sleep -s 1; } if ($retries -ge 10) { Write-Host \"Something went wrong, maybe Steam doesn't print to logs\"; exit 1; } $content = Get-Content \"%connectionLogs%\" | select -Last 50; foreach ($line in $content) { $match = [regex]::Match($line, \"[\d]{4}-[\d]{2}-[\d]{2} ([\d]{2}:){2}[\d]{2}\"); if ($match.Success -and $match.Value -ge $now) { $match = [regex]::Match($line, \"RecvMsgClientLogOnResponse(?=\(\).+'OK')^|Connection Failed^|Invalid Password\"); if ($match.Success) { $retries = -2; break; } } } $retries++; } switch ($match.Value) { \"Invalid Password\" { Write-Host \"Invalid username and password combination\"; Write-Host; $content = Get-Content \"%0\"; $done = 0; for ($i=0; $i -lt $content.Length; $i++) { if ($content[$i] -match 'set \"username=.*\"') { $content[$i] = \"set `\"username=`\"\"; $done++; } elseif ($content[$i] -match 'set \"password=.*\"') { $content[$i] = \"set `\"password=`\"\"; $done++; } if ($done -eq 2) { break; } }; Write-Host \"Press any key to exit . .\"; cmd /c pause | Out-Null; %editandkillscript%; } \"Connection Failed\" { Write-Host \"Something went wrong. Maybe there's no internet\"; Write-Host; exit 1; } \"RecvMsgClientLogOnResponse\" { exit 0; } } exit 1; "
 call :handleError
 
+:: 'Function', needs $now to be set, returns true if game didn't start
+:: because of bad config error message
+set "checkIfGameFailedToStartFunction=function IsBadConfigGame () { if ([System.IO.File]::Exists(\"%contentLogs%\")) { return $false; } $content = Get-Content \"%contentLogs%\" | select -Last 50; foreach ($line in $content) { $match = [regex]::Match($line, \"[\d]{4}-[\d]{2}-[\d]{2} ([\d]{2}:){2}[\d]{2}\"); if ($match.Success -and $match.Value -ge $now) { $match = [regex]::Match($line, \"Failed running app %id% \(missing config section\)\"); if ($match.Success) { $now = Get-Date -Format 'yyyy-MM-dd HH:mm'; return $true; } } } return $false; }"
+
+:: Starts game specified by id
+set "startGame=Start-Process -FilePath \"%steam%\" -ArgumentList \"-applaunch %id%\""
+
 :: Start the game and wait for it to exit with a hidden console window
-powershell -WindowStyle Hidden -Command "Start-Process -FilePath \"%steam%\" -ArgumentList \"-applaunch %id%\"; $slepttime = 0; do { $gmid = (Get-Process | ?{$_.path -eq \"%game%\"} | Select -ExpandProperty Id); $slepttime++; Start-Sleep 1; } while ($gmid -eq $null -and $slepttime -le 10); if ($gmid -eq $null) { Add-Type -AssemblyName PresentationCore,PresentationFramework; [System.Windows.MessageBox]::Show(\"No running process of the game detected. Maybe it crashed, or ID and selected game don't match/are wrong (in this case you'll have to manually edit this script).\", 'Problem detecting or launching Steam title', 0, 48) | Out-Null; exit 1; } Wait-Process -Id $gmid; %exitSteam%; Start-Process -FilePath \"%steam%\"; exit 0; "
+powershell -WindowStyle Hidden -Command "$now = Get-Date -Format 'yyyy-MM-dd HH:mm'; %checkIfGameFailedToStartFunction%; %startGame%; $slepttime = 0; do { if ( IsBadConfigGame ) { %startGame%; Start-Sleep -s 4; } $gmid = (Get-Process | ?{$_.path -eq \"%game%\"} | Select -ExpandProperty Id); $slepttime++; Start-Sleep -s 1; } while ($gmid -eq $null -and $slepttime -le 10); if ($gmid -eq $null) { Add-Type -AssemblyName PresentationCore,PresentationFramework; [System.Windows.MessageBox]::Show(\"No running process of the game detected. Maybe it crashed, or ID and selected game don't match/are wrong (in this case you'll have to manually edit this script).\", 'Problem detecting or launching Steam title', 0, 48) | Out-Null; exit 1; } Wait-Process -Id $gmid; %exitSteam%; Start-Process -FilePath \"%steam%\"; exit 0; "
 call :handleError
 
 exit 0
