@@ -12,7 +12,7 @@ for you.
 > :warning: Although the chances are low, it is your responsibility if a precious account gets stolen  
 > This script [stores your information as plain text](https://www.passcamp.com/blog/dangers-of-storing-and-sharing-passwords-in-plaintext/)
 
-![demo](https://raw.githubusercontent.com/FLevent29/steam-smurf/master/demo.png)
+![demo](demo.gif)
 
 ## How it works
 
@@ -25,10 +25,7 @@ Here's what the script does :
 6. Shuts down Steam 
 7. Launches Steam again so you can log back into your official/whichever account
 
-> :warning: At step 4. on rare occasions Steam might warn you about some
-> **_bad game configuration_**, and the game fails to start  
-> The script will simply try to restart it, and 
-> eventually should succeed if everything else is fine
+> :warning: At step 4. things might go wrong
 
 ## Download & Setup
 
