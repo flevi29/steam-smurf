@@ -23,9 +23,8 @@ Here's what the script does :
 4. Launches provided title 
 5. Waits for provided title to terminate 
 6. Shuts down Steam 
-7. Launches Steam again so you can log back into your official/whichever account
-
-> :warning: At step 4. things might go wrong
+7. Launches Steam again so you can log back into 
+   your official/whichever account
 
 ## Download & Setup
 
@@ -38,32 +37,25 @@ _Information_ the script needs :
 - **Game's executable location**
 - **Game's Steam ID** (it's right next to `store.steampowered.com/app/` on the [game's store page](https://store.steampowered.com/))
 
-> **NOTE** All of these can be entered manually, by **editing the script with a preferred text editor** like notepad,
+> :information_source: All of these can be entered manually, by
+> **editing** the script with a preferred **text editor** like notepad,
 > furthermore it is _**advised**_ to do so, because some wrong 
-> information can only be corrected that way, and it's easier in my opinion
+> information can only be corrected that way
  
-What I like to do on Windows 10 is to set up a _shortcut_ of the script in `%appdata%\Microsoft\Windows\Start Menu\Programs` . .  
-This way I can quickly launch it just by pressing <kbd>Win</kbd> + typing in the shortcuts' name, also I can set a custom icon . .
+On Windows 10 you could set up a _shortcut_ to the 
+script in `%appdata%\Microsoft\Windows\Start Menu\Programs` . .  
+This way you can quickly launch it by pressing 
+<kbd>Win</kbd> and typing in the shortcuts' name,
+also you can set an icon . .
 
 Example of how the script should look like for Dota2 ↴
 
 ```bat
-@echo off
-
-:: Insert your username and password here right after the '=' (equals sign)
-:: NOTE it is your responsibility if a precious account gets stolen this way
-:: as it's written down in plain text
 set "username=anonym"
 set "password=mynona"
 
-:: Here's the default location for the Steam folder,
-:: game is the desired game's executable full path
-:: Edit what you need to
-set "steamfolder=%ProgramFiles(x86)%\Steam"
-set "game=%steamfolder%\steamapps\common\dota 2 beta\game\bin\win64\dota2.exe"
+set "steamFolder=%ProgramFiles(x86)%\Steam"
+set "game=%steamFolder%\steamapps\common\dota 2 beta\game\bin\win64\dota2.exe"
 
-:: Specify the chosen game's Steam ID, which is a decimal number
-:: One easy way to find it is to go to the store page of the game
-:: It's in the address bar right next to 'store.steampowered.com/app/'
 set "id=570"
 ```
