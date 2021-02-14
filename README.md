@@ -21,7 +21,7 @@ You don't have to go through that.
 5. Restarts Steam
 
 > :information_source: The optional part only works if the `game` variable is
-> provided, you can find a game's path easily in Task Manager  
+> provided, you can find a game's path easily in Task Manager 
 > by right clicking the game's process, and selecting _Open file location_ 
 
 ## Download & Setup
