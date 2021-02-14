@@ -2,7 +2,7 @@
 
 Do you have a _"smurf"_ account? Does the whole process of 
 logging off, waiting, copy-pasting/remembering
-login info, logging in, waiting and so on bother you?  
+login information, logging in, waiting and so on bother you?  
 
 You don't have to go through that.
 
@@ -22,13 +22,13 @@ You don't have to go through that.
 
 > :information_source: The optional part only works if the `game` variable is
 > provided, you can find it easily in Task Manager  
-> right click the game's process, and select _Open file location_ 
+> by right clicking the game's process, and selecting _Open file location_ 
 
 ## Download & Setup
 
 - [:arrow_double_down:Download smurf.bat](https://github.com/FLevent29/steam-smurf/releases/download/1.1/smurf.bat)
 
-####_Information_ the script needs :
+###_Information_ the script needs :
 
 - **Username**
 - **Password**
