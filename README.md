@@ -13,7 +13,7 @@ You don't have to go through that.
 
 ## How it works
 
-1. Validates provided information, asks for your input if needed
+1. Validates provided information, asks for input if needed
 2. Shuts down currently running Steam process 
 3. Logs in and launches game with provided info  
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_optionally_ ↴
@@ -21,7 +21,7 @@ You don't have to go through that.
 5. Restarts Steam
 
 > :information_source: The optional part only works if the `game` variable is
-> provided, you can find it easily in Task Manager  
+> provided, you can find a game's path easily in Task Manager  
 > by right clicking the game's process, and selecting _Open file location_ 
 
 ## Download & Setup
@@ -42,7 +42,7 @@ You don't have to go through that.
 > - if you wish to change anything, it can only be done like so
 > (at the very least by emptying the variables)
 > 
-> :information_source: to find `id` you could just leave it empty,
+> :information_source: To get `id` you could just leave it empty,
 > the script finds all the available ones, leaving you to
 > simply select from them . .  
 > Otherwise it's right next to `store.steampowered.com/app/` 
