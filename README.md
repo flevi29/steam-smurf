@@ -26,9 +26,9 @@ You don't have to go through that.
 
 ## Download & Setup
 
-- [:arrow_double_down:Download smurf.bat](https://github.com/FLevent29/steam-smurf/releases/download/1.1/smurf.bat)
+[:arrow_double_down:Download smurf.bat](https://github.com/FLevent29/steam-smurf/releases/download/1.1/smurf.bat)
 
-###_Information_ the script needs :
+#### _Information_ the script needs :
 
 - **Username**
 - **Password**
