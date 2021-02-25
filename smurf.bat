@@ -60,40 +60,36 @@ call :handleError
 echo|set /p="OK" & echo.
 
 :: Function for terminating current Steam process
-set "exitSteam=$stmpid = (Get-Process | ?{$_.path -eq \"%steam%\"} | Select -ExpandProperty Id); if ($stmpid -ne $null) { & '%steam%' -shutdown; Wait-Process -Id $stmpid; } "
+:: Observation: Sometimes it fails to shut down
+set "exitSteam=$stmpid = (Get-Process | ?{$_.path -eq \"%steam%\"} | Select -ExpandProperty Id); if ($stmpid -ne $null) { & '%steam%' -shutdown; Wait-Process -Id $stmpid | Out-Null; Start-Sleep -s 1; } "
 :: Saves current time and date into $now PS variable
-set "setNow=$now = Get-Date -Format 'yyyy-MM-dd HH:mm'"
+set "setNow=$now = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'"
 :: PS regex match string for the date format above
 set "dateMatch=[regex]::Match($line, \"[\d]{4}-[\d]{2}-[\d]{2} ([\d]{2}:){2}[\d]{2}\")"
 :: PS handler for invalid pass/username, rewrites script emptying username and password variables
 set "invalidPassOrUsername=Write-Host \"Failed`r`nInvalid username and password combination\"; Write-Host; $content = Get-Content \"%0\"; $done = 0; for ($i=0; $i -lt $content.Length; $i++) { if ($content[$i] -match 'set \"username=.*\"') { $content[$i] = \"set `\"username=`\"\"; $done++; } elseif ($content[$i] -match 'set \"password=.*\"') { $content[$i] = \"set `\"password=`\"\"; $done++; } if ($done -eq 2) { break; } }; Write-Host \"Press any key to exit . .\"; %psPause%; %editAndKillScript%;"
 :: Decides what to do depending on the value of $match PS variable
-set "switchMatch=switch ($match.Value) { 'Invalid Password' { %exitSteam%; %invalidPassOrUsername%; } 'Connection Failed' { Write-Host \"Failed`r`nSomething went wrong. Maybe there's no internet connection . . .`r`n\"; %exitSteam%; exit 1; } 'WGToken' { exit 0; } }"
+set "switchMatch=switch ($match.Value) { 'Invalid Password' { %exitSteam%; %invalidPassOrUsername%; } 'Password is not set' { %exitSteam%; %invalidPassOrUsername%; } 'Connection Failed' { Write-Host \"Failed`r`nSomething went wrong. Maybe there's no internet connection . . .`r`n\"; %exitSteam%; exit 1; } 'WGToken' { exit 0; } }"
 
 :: Kill running Steam and attempt login to Steam with provided information
 :: Then check if login attempt is successful
 echo|set /p="Attempting login to Steam and launching game . . . "
-powershell -WindowStyle Normal -Command "%exitSteam%; & '%steam%' -silent -login %username% %password% -applaunch %id%; %setNow%; $retries = 0; while ($retries -ge 0) { if ($retries -ge 50) { Write-Host \"`r`nSomething went wrong, maybe Steam got stuck or didn't start . . .\"; exit 1; } $content = Get-Content \"%connectionLogs%\" | select -Last 50; foreach ($line in $content) { $match = %dateMatch%; if ($match.Success -and $match.Value -ge $now) { $match = [regex]::Match($line, \"WGToken^|Connection Failed^|Invalid Password\"); if ($match.Success) { $retries = -2; break; } } } $retries++; Start-Sleep -s 1; } %switchMatch%; exit 1; "
+powershell -WindowStyle Normal -Command "%exitSteam%; & '%steam%' -silent -login %username% %password% -applaunch %id%; %setNow%; $retries = 0; while ($retries -ge 0) { if ($retries -ge 50) { Write-Host \"`r`nSomething went wrong, maybe Steam got stuck or didn't start . . .\"; exit 1; } $content = Get-Content '%connectionLogs%' -Tail 50; foreach ($line in $content) { $match = %dateMatch%; if ($match.Success -and $match.Value -ge $now) { $match = [regex]::Match($line, \"WGToken^|Connection Failed^|Invalid Password^|Password is not set\"); if ($match.Success) { $retries = -2; break; } } } $retries++; Start-Sleep -s 1; } %switchMatch%; exit 1; "
 call :handleError
 echo|set /p="login OK" & echo.
 
 :: If game variable isn't defined, then we're done
 if "%game%" == "" (exit 0)
 
-:: Alerts user of failed game startup with a message box
-set "alertUserOfFailure=Add-Type -AssemblyName PresentationCore,PresentationFramework; [System.Windows.MessageBox]::Show(\"No running process of the game detected. Maybe it's updating/installing, it crashed or something else.`r`nOr maybe ID and selected game executable don't match/are wrong (in this case you'll have to manually edit this script).\", 'Problem detecting or launching Steam title', 0, 48) | Out-Null"
 :: Gets game PID from executable
 set "getGamePid=(Get-Process | ?{$_.path -eq \"%game%\"} | Select -ExpandProperty Id)"
 
 :: Try detecting the game
 echo|set /p="Detecting game . . . "
-powershell -WindowStyle Normal -Command "$retries = 0; do { Start-Sleep -s 1; $gmpid = %getGamePid%; $retries++; } while ($gmpid -eq $null -and $retries -lt 5); if ($gmpid -eq $null) { %alertUserOfFailure%; exit 1; } exit 0; "
-if %errorlevel% equ 0 (goto :GameStarted)
-echo|set /p="Failed" & echo.
+powershell -WindowStyle Normal -Command "$retries = 0; do { Start-Sleep -s 1; $gmpid = %getGamePid%; if ($retries -eq 5) { $retries++; Write-Host -NoNewLine \"`r`nIf game is installing/updating/configuring wait . .`r`nOtherwise feel free to close this window . .`r`nDetecting game . . . \" } else { $retries++; } } while ($gmpid -eq $null); exit 0; "
 call :handleError
 
 :: Wait for game to exit with a hidden console window
-:GameStarted
 echo|set /p="Success" & echo. & echo|set /p="Waiting for game to exit . . . "
 powershell -WindowStyle Hidden -Command "Wait-Process -Id %getGamePid%; %exitSteam%; & '%steam%'; exit 0; "
 
@@ -101,9 +97,7 @@ exit 0
 
 :: 'Function' for terminating script after 'exceptions'
 :handleError
-if %errorlevel% neq 0 (
-  echo|set /p="Press any key to exit . . ."
-  pause >nul
-  exit 1
-)
-goto:eof
+if %errorlevel% equ 0 ( goto:eof )
+echo|set /p="Press any key to exit . . ."
+pause >nul
+exit 1
