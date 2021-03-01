@@ -31,6 +31,7 @@ title %btchtitle%
 
 set "steam=%steamFolder%\steam.exe"
 set "connectionLogs=%steamFolder%\logs\connection_log.txt"
+set "contentLogs=%steamFolder%\logs\content_log.txt"
 
 :: 'Function' for changing the content
 :: of the script via $content PS variable
@@ -61,20 +62,14 @@ echo|set /p="OK" & echo.
 
 :: Function for terminating current Steam process
 :: Observation: Sometimes it fails to shut down
-set "exitSteam=$stmpid = (Get-Process | ?{$_.path -eq \"%steam%\"} | Select -ExpandProperty Id); if ($stmpid -ne $null) { & '%steam%' -shutdown; Wait-Process -Id $stmpid | Out-Null; Start-Sleep -s 1; } "
-:: Saves current time and date into $now PS variable
-set "setNow=$now = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'"
-:: PS regex match string for the date format above
-set "dateMatch=[regex]::Match($line, \"[\d]{4}-[\d]{2}-[\d]{2} ([\d]{2}:){2}[\d]{2}\")"
+set "exitSteam=$stmpid = (Get-Process | ?{$_.path -eq '%steam%'} | Select -ExpandProperty Id); if ($stmpid -ne $null) { & '%steam%' -shutdown; Wait-Process -Id $stmpid | Out-Null; Start-Sleep -s 1; } "
 :: PS handler for invalid pass/username, rewrites script emptying username and password variables
 set "invalidPassOrUsername=Write-Host \"Failed`r`nInvalid username and password combination\"; Write-Host; $content = Get-Content \"%0\"; $done = 0; for ($i=0; $i -lt $content.Length; $i++) { if ($content[$i] -match 'set \"username=.*\"') { $content[$i] = \"set `\"username=`\"\"; $done++; } elseif ($content[$i] -match 'set \"password=.*\"') { $content[$i] = \"set `\"password=`\"\"; $done++; } if ($done -eq 2) { break; } }; Write-Host \"Press any key to exit . .\"; %psPause%; %editAndKillScript%;"
-:: Decides what to do depending on the value of $match PS variable
-set "switchMatch=switch ($match.Value) { 'Invalid Password' { %exitSteam%; %invalidPassOrUsername%; } 'Password is not set' { %exitSteam%; %invalidPassOrUsername%; } 'Connection Failed' { Write-Host \"Failed`r`nSomething went wrong. Maybe there's no internet connection . . .`r`n\"; %exitSteam%; exit 1; } 'WGToken' { exit 0; } }"
 
 :: Kill running Steam and attempt login to Steam with provided information
 :: Then check if login attempt is successful
 echo|set /p="Attempting login to Steam and launching game . . . "
-powershell -WindowStyle Normal -Command "%exitSteam%; & '%steam%' -silent -login %username% %password% -applaunch %id%; %setNow%; $retries = 0; while ($retries -ge 0) { if ($retries -ge 50) { Write-Host \"`r`nSomething went wrong, maybe Steam got stuck or didn't start . . .\"; exit 1; } $content = Get-Content '%connectionLogs%' -Tail 50; foreach ($line in $content) { $match = %dateMatch%; if ($match.Success -and $match.Value -ge $now) { $match = [regex]::Match($line, \"WGToken^|Connection Failed^|Invalid Password^|Password is not set\"); if ($match.Success) { $retries = -2; break; } } } $retries++; Start-Sleep -s 1; } %switchMatch%; exit 1; "
+powershell -WindowStyle Normal -Command "%exitSteam%; & '%steam%' -silent -login '%username%' '%password%' -applaunch '%id%'; $proc = Start-Process powershell -NoNewWindow -PassThru -ArgumentList \"-Command `\"Get-Content '%connectionLogs%' -Wait -Tail 0 | Where-Object { if (`$_ -match 'WGToken') { exit 0; } if (`$_ -match 'Connection Failed') { exit 420; } if (`$_ -match 'Invalid Password' -or `$_ -match 'Password is not set') { exit 69; } }`\"\"; $handle = $proc.Handle; $proc.WaitForExit(15000) | Out-Null; if (!$proc.HasExited) { $proc.Kill(); Write-Host \"`r`nSteam got stuck/didn't start/crashed . .\"; exit 1; } if ($proc.ExitCode -eq 420) { Write-Host \"Failed`r`nSomething went wrong. Maybe there is no internet connection . . .`r`n\"; } elseif ($proc.ExitCode -eq 69) { %exitSteam%; %invalidPassOrUsername%; } exit $proc.ExitCode;"
 call :handleError
 echo|set /p="login OK" & echo.
 
@@ -86,7 +81,7 @@ set "getGamePid=(Get-Process | ?{$_.path -eq \"%game%\"} | Select -ExpandPropert
 
 :: Try detecting the game
 echo|set /p="Detecting game . . . "
-powershell -WindowStyle Normal -Command "$retries = 0; do { Start-Sleep -s 1; $gmpid = %getGamePid%; if ($retries -eq 5) { $retries++; Write-Host -NoNewLine \"`r`nIf game is installing/updating/configuring wait . .`r`nOtherwise feel free to close this window . .`r`nDetecting game . . . \" } else { $retries++; } } while ($gmpid -eq $null); exit 0; "
+powershell -WindowStyle Normal -Command "$proc = Start-Process powershell -NoNewWindow -PassThru -ArgumentList \"-Command `\"Get-Content '%contentLogs%' -Wait -Tail 0 | Where-Object { if (`$_ -match 'AppID %id% scheduler finished : removed from schedule') { & '%steam%' -applaunch '%id%'; } if (`$_ -match 'AppID %id% state changed.+App Running') { break; } }; `\"\"; $proc.WaitForExit(5000) | Out-Null; if (!$proc.HasExited) { Write-Host -NoNewLine \"`r`nIf game is installing/updating/configuring, then wait . .`r`nOtherwise feel free to close this window . .`r`nPossibly '%game%' is not the correct executable . .`r`nDetecting game . . . \"; } $proc.WaitForExit() | Out-Null; exit 0; "
 call :handleError
 
 :: Wait for game to exit with a hidden console window
