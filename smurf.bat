@@ -39,7 +39,7 @@ set "editAndKillScript=$cmdpid = (Get-Process | ?{$_.mainWindowTitle -match \"%b
 :: Text -less pause for PS
 set "psPause=cmd /c pause | Out-Null"
 :: Press any key to continue
-set "pressAnyCont=Write-Host; Write-Host 'Press any key to continue . .'; %psPause%;"
+set "pressAnyCont=Write-Host \"`r`nPress any key to continue . .\"; %psPause%;"
 :: Folder/file selection 'canceled' state handler function definer
 set "defineSelCanceled=function canceled ($mesg) { Write-Host \"$mesg selection canceled\"; Write-Host \"You can always manually edit this batch file with your preferred text editor, and add what you need that way\"; Write-Host; exit 1; }"
 :: Exit PS if variables are correct with 0, otherwise 1
@@ -81,7 +81,7 @@ set "getGamePid=(Get-Process | ?{$_.path -eq \"%game%\"} | Select -ExpandPropert
 
 :: Try detecting the game
 echo|set /p="Detecting game . . . "
-powershell -WindowStyle Normal -Command "$proc = Start-Process powershell -NoNewWindow -PassThru -ArgumentList \"-Command `\"Get-Content '%contentLogs%' -Wait -Tail 0 | Where-Object { if (`$_ -match 'AppID %id% scheduler finished : removed from schedule') { & '%steam%' -applaunch '%id%'; } if (`$_ -match 'AppID %id% state changed.+App Running') { break; } }; `\"\"; $proc.WaitForExit(5000) | Out-Null; if (!$proc.HasExited) { Write-Host -NoNewLine \"`r`nIf game is installing/updating/configuring, then wait . .`r`nOtherwise feel free to close this window . .`r`nPossibly '%game%' is not the correct executable . .`r`nDetecting game . . . \"; } $proc.WaitForExit() | Out-Null; exit 0; "
+powershell -WindowStyle Normal -Command "$proc = Start-Process powershell -NoNewWindow -PassThru -ArgumentList \"-Command `\"Get-Content '%contentLogs%' -Wait -Tail 0 | Where-Object { if (`$_ -match 'AppID %id% state changed.+App Running') { break; } }; `\"\"; $proc.WaitForExit(5000) | Out-Null; if (!$proc.HasExited) { Write-Host -NoNewLine \"`r`nIf game is installing/updating/configuring, then wait and launch it manually if need be . .`r`nOtherwise feel free to close this window . .`r`nPossibly '%game%' is not the correct executable . .`r`nDetecting game . . . \"; $proc.WaitForExit() | Out-Null; } exit 0; "
 call :handleError
 
 :: Wait for game to exit with a hidden console window
