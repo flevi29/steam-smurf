@@ -1,3 +1,5 @@
+> :information_source: This project is a mess, so I made a [far better one in Rust](https://github.com/FLevent29/steamed)
+
 # Steam Smurf
 
 Do you have a _"smurf"_ account? Does the whole process of 
